@@ -1,22 +1,22 @@
 import request from "supertest";
 import app from "../src/app";
-import { TodoInstance } from "../src/todo/model";
+import { UserModel } from '../src/models';
 
 describe("test create route", () => {
 	const todo = {
 		title: "Create todo",
 	};
 
-	test("Should have key record and msg when created", async () => {
+	test("Should have key record and message when created", async () => {
 		const mockCreateTodo = jest.fn((): any => todo);
 		jest
-			.spyOn(TodoInstance, "create")
+			.spyOn(UserModel, "create")
 			.mockImplementation(() => mockCreateTodo());
 
 		const res = await request(app).post("/api/v1/create").send(todo);
 
 		expect(mockCreateTodo).toHaveBeenCalledTimes(1);
-		expect(res.body).toHaveProperty("msg");
+		expect(res.body).toHaveProperty("message");
 		expect(res.body).toHaveProperty("record");
 	});
 
@@ -25,14 +25,14 @@ describe("test create route", () => {
 			throw "error";
 		});
 		jest
-			.spyOn(TodoInstance, "create")
+			.spyOn(UserModel, "create")
 			.mockImplementation(() => mockCreateTodo());
 
 		const res = await request(app).post("/api/v1/create").send(todo);
 
 		expect(mockCreateTodo).toHaveBeenCalledTimes(1);
 		expect(res.body).toEqual({
-			msg: "fail to create",
+			message: "fail to create",
 			status: 500,
 			route: "/create",
 		});
@@ -42,7 +42,7 @@ describe("test create route", () => {
 		const res = await request(app).post("/api/v1/create").send({});
 
 		expect(res.body).toEqual({
-			msg: "The title value should not be empty",
+			message: "The title value should not be empty",
 			param: "title",
 			location: "body",
 		});
@@ -57,7 +57,7 @@ describe("test read pagination  route", () => {
 	test("Should return array of todo", async () => {
 		const mockReadAllTodo = jest.fn((): any => [todo]);
 		jest
-			.spyOn(TodoInstance, "findAll")
+			.spyOn(UserModel, "findAll")
 			.mockImplementation(() => mockReadAllTodo());
 
 		const res = await request(app).get("/api/v1/read?limit=5");
@@ -71,13 +71,13 @@ describe("test read pagination  route", () => {
 			throw "error";
 		});
 		jest
-			.spyOn(TodoInstance, "findAll")
+			.spyOn(UserModel, "findAll")
 			.mockImplementation(() => mockCreateTodo());
 
 		const res = await request(app).get("/api/v1/read?limit=5");
 		expect(mockCreateTodo).toHaveBeenCalledTimes(1);
 		expect(res.body).toEqual({
-			msg: "fail to read",
+			message: "fail to read",
 			status: 500,
 			route: "/read",
 		});
@@ -87,7 +87,7 @@ describe("test read pagination  route", () => {
 		const res = await request(app).get("/api/v1/read?limit=0");
 		expect(res.body).toEqual({
 			value: "0",
-			msg: "The limit value should be number and between 1-10",
+			message: "The limit value should be number and between 1-10",
 			param: "limit",
 			location: "query",
 		});
