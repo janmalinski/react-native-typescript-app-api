@@ -10,8 +10,8 @@ export interface UserModelAttributes {
 	name?: string;
 	phonenumber?: string;
 	phonenumberconsent?: boolean;
-	latitude?: string;
-	longitude?: string;
+	latitude?: number;
+	longitude?: number;
 	registrationcode?: string;
 	registrationcodeexpirationdate?: Date,
 	registered?: Boolean;
@@ -51,10 +51,10 @@ UserModel.init(
 			type: DataTypes.BOOLEAN,
 		}, 
 		latitude: {
-			type: DataTypes.STRING,
+			type: DataTypes.FLOAT,
 		},
 		longitude: {
-			type: DataTypes.STRING,
+			type: DataTypes.FLOAT,
 		},
 		registrationcode: {
 			type: DataTypes.STRING,

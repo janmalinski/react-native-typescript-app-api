@@ -6,6 +6,9 @@ export interface AdModelAttributes {
 	description: string;
 	availablefrom: Date;
 	availableto: Date;
+	latitude: number;
+	longitude: number;
+	address: string;
 }
 
 type AdModelCreationAttributes = Optional<AdModelAttributes, 'id'>;
@@ -33,6 +36,15 @@ AdModel.init(
 			type: DataTypes.DATE,
 			allowNull: true,
 		},
+		latitude: {
+			type:  DataTypes.FLOAT,
+		},
+		longitude: {
+			type: DataTypes.FLOAT
+		}, 
+		address: {
+			type: DataTypes.STRING,
+		}
 	},
 	{
 		sequelize: db,

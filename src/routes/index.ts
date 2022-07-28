@@ -1,9 +1,9 @@
-import express from 'express';
 import multer from 'multer';
 
 import Validator from '../validator';
 import Middleware from '../middleware';
 import { AdServiceController, AuthController, RoleController, UserController, ServiceController, TypeemploymentController, TimeofdayController } from '../controllers';
+import express from 'express';
 
 
 const storage = multer.diskStorage({
@@ -78,10 +78,9 @@ router.post(
 	UserController.uploadPhoto
 	);
 
-	router.post('/user/get-nearby-users',
-	Middleware.verifyAccessToken,
+router.post('/user/get-nearby-users',
 	UserController.getNearbyUsers
-	)
+	);
 
 router.post(
 	'/service/create',
@@ -103,6 +102,12 @@ router.post(
 	Middleware.handleValidationError,
 	AdServiceController.create
 );
+
+router.get(
+	'/ad',
+	Middleware.verifyAccessToken,
+	AdServiceController.getAll
+	);
 
 router.post(
 	'/typeemployment/create',

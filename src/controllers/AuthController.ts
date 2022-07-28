@@ -34,6 +34,7 @@ const sendRegistrationEmail = async(email: string, text: string) => {
         },
         Source: emailFrom
     };
+
     return ses.sendEmail(params).promise().then((val)=>console.log('REGISTRATION_EMAIL_SENT', val)).catch(e=>console.log('REGISTRATION_EMAIL_ERROR', e))
 };
 
@@ -92,11 +93,12 @@ class AuthController {
 
 	async signIn(req:Request, res: Response) {
         const {email, password }= req.body;
+       
         try {
             const dbUser: any = await UserModel.findOne({ where : {
                 email, registered: true
             },
-        })      
+        });      
             if(dbUser){
             bcrypt.compare(password, dbUser.password, (err, compareRes) => {
                 if (err) { // error while comparing

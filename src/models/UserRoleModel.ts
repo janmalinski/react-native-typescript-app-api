@@ -21,11 +21,13 @@ UserRoleModel.init(
 			primaryKey: true,
 		},
 		user_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},
 		role_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},		
 	},

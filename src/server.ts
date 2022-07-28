@@ -11,7 +11,7 @@ import { ServiceModel, UserModel, AdServiceModel, AdModel, TypeemploymentModel, 
 // const cert = fs.readFileSync(path.resolve('ssl/cert.pem'));
 
 ServiceModel.belongsToMany(AdModel, {through: AdServiceModel, foreignKey: 'service_id'});
-AdModel.belongsToMany(ServiceModel, {through: AdServiceModel, foreignKey: 'ad_id'});
+AdModel.belongsToMany(ServiceModel, {through: AdServiceModel, foreignKey: 'ad_id', as: 'Services'});
 
 AdModel.belongsTo(UserModel, { constraints: true, onDelete: 'CASCADE', as: 'User'});
 UserModel.hasMany(AdModel, {foreignKey: 'user_id', as: 'Ads'});
@@ -23,7 +23,7 @@ TypeemploymentModel.belongsToMany(AdModel, {through: AdTypeemploymentModel, fore
 AdModel.belongsToMany(TypeemploymentModel, {through: AdTypeemploymentModel, foreignKey: 'ad_id', as: 'Typeemployments'});
 
 TimeofdayModel.belongsTo(AdModel);
-AdModel.hasOne(TimeofdayModel,  { foreignKey: 'ad_id'});
+AdModel.hasOne(TimeofdayModel,  { foreignKey: 'ad_id', as: 'Time'});
 
 // db.sync({force: true}).then(() => {
 db.sync().then(() => {

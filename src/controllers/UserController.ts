@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { QueryTypes } from 'sequelize';
 
 import { RequestTypes, UserTypes  } from "../types";
-import { UserModel } from "../models";
+import { ServiceModel, TimeofdayModel, TypeemploymentModel, UserModel } from "../models";
 import { deleteFile } from '../utils/file';
 import db from "../config/database.config";
 
@@ -15,14 +15,22 @@ class UserController {
 			},
 		})    
 			if(user){
-				const { id, email, avatarURL, name, phoneNumber, phoneNumberConsent} = user;
+				const { id, email, avatarurl, name, phonenumber, phonenumberconsent} = user;
 				// @ts-ignore
-				const ads = await user.getAds();
+				const ads = await user.getAds({
+					include: [
+						{model: TimeofdayModel, as: 'Time'},
+						{model: ServiceModel, as: 'Services', attributes: ['id', 'name']},
+						{model: TypeemploymentModel, as: 'Typeemployments', attributes: ['id', 'name']}
+					]
+				});
+
 				// @ts-ignore
 				const roles = await user.getRoles(); 
-				const modifiedAds = ads.map((ad: any)=>({id: ad.id, name: ad.description}));
-				const modifiedRoles =roles.map((role: any)=>({id: role.id, name: role.name}));
-				return res.status(200).json({user: {id, email, name, phoneNumber, phoneNumberConsent, avatarURL, ads:  modifiedAds, roles: modifiedRoles}});
+				const modifiedAds = ads.map((ad: any)=>({id: ad.id, description: ad.description, availableFrom: ad.availablefrom, availableTo: ad.availableto, latitude: ad.latitude, longitude: ad.longitude, address: ad.address, availability:{negotiable: ad.Time.negotiable, time: ad.Time.timeofday}, services: ad.Services, typeOfEmployments: ad.Typeemployments}));
+				const modifiedRoles = roles.map((role: any)=>({id: role.id, name: role.name}));
+
+				return res.status(200).json({user: {id, email, name, phoneNumber: phonenumber, phoneNumberConsent: phonenumberconsent, avatarURL: avatarurl, ads:  modifiedAds, roles: modifiedRoles}});
 			} else {
 				return res.status(404).json({message: 'User not found'});
 			}
@@ -34,14 +42,16 @@ class UserController {
 
 	async uploadPhoto(req:RequestTypes, res: Response){
 		try {
+
 			const user: UserTypes | null = await UserModel.findOne({where:{email: req.userEmail}});
-			if(user?.avatarURL){
-				deleteFile('./public' + user.avatarURL);
+			if(user?.avatarurl){
+				deleteFile('./public' + user.avatarurl);
 			}
 			if(user){
 				const avatarURL = '/img/'+req.file.filename;
-				user.avatarURL = avatarURL
+				user.avatarurl = avatarURL
 				await user.save();
+				console.log('AVATAR_URL', avatarURL)
 				return res.status(200).json({message: 'Avatar image uploaded', avatarURL });
 			}
 		} catch (error) {
@@ -71,10 +81,14 @@ class UserController {
 	async getNearbyUsers(req: Request, res: Response){
 		try {
 			const users = await UserModel.findAll({attributes:['id', 'latitude', 'longitude']});
-			const userCoordinates = users.map(user=>(user.get()));
-			const toFixedUserCoordinates = userCoordinates.map(user=> ({ ...user, latitude: parseFloat(user.latitude as string).toFixed(1), longitude:  parseFloat(user.longitude as string).toFixed(1)}))
-			const filteredUserCoordinates = toFixedUserCoordinates.find(el=> el.latitude === el.latitude + 0.1)
-		    console.log('USER_COORDINATES', filteredUserCoordinates )
+			if(users.length > 1){
+				let nearbyUsers = [];
+				for(let i = 0; i < users.length; i++){
+					nearbyUsers.push(users[i])
+				}
+				console.log('NEARBY_USERS', nearbyUsers)
+			}
+
 		} catch (error) {
 			console.log('ERROR', error)
 			res.status(500).json({message:'Server error'});
