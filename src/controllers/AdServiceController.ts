@@ -20,6 +20,7 @@ class AdServiceController{
     try {
         const { serviceIds, employmentTypeIds, description, dateAvailableFrom, fixedTerm, dateAvailableTo,  workingTimeNegotiable,
             workingTime, latitude, longitude, address  } = req.body;
+
         const user: UserTypes | null = await UserModel.findOne({where:{email: req.userEmail}});
         if(user){
             const ad: AdTypes | any = user.createAd && await user.createAd({ description, availablefrom: dateAvailableFrom, availableto: fixedTerm ? dateAvailableTo : null, latitude, longitude, address});
@@ -43,7 +44,7 @@ class AdServiceController{
                         await AdTypeemploymentModel.bulkCreate(dataTypeemployment,{returning: true});
                         const services = await Service.findAll({where:{id: serviceIds}, attributes:['id', 'name']});
                         const typeOfEmployments = await Typeemployment.findAll({where:{id: employmentTypeIds}, attributes:['id', 'name']});
-                        const adWithTimeOfDay: any = await AdModel.findByPk(id,{include: [{ model: TimeofdayModel, attributes:['timeofday', 'negotiable']}]});
+                        const adWithTimeOfDay: any = await AdModel.findByPk(id,{include: [{ model: TimeofdayModel, as: 'Time', attributes:['timeofday', 'negotiable']}]});
                        
                         const addService= {
                             id,
@@ -56,13 +57,14 @@ class AdServiceController{
                             longitude,
                             address
                         };
-                        res.status(200).json({ message: 'Add created', add: addService });
+                        res.status(200).json({ message: 'Add created', ad: addService });
              }
             }             
         } else {
             res.status(404).json({ message: 'User not found'});
         }
     } catch (error) {   
+        console.log('SERVER_ERROR', error)
         res.status(500).json({message:'Server error'});
     }};
 
