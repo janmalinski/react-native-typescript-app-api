@@ -2,9 +2,8 @@ import multer from 'multer';
 
 import Validator from '../validator';
 import Middleware from '../middleware';
-import { AdServiceController, AuthController, RoleController, UserController, ServiceController, TypeemploymentController, TimeofdayController } from '../controllers';
+import { AdServiceController, AuthController, RoleController, UserController, ServiceController, TypeemploymentController, TimeofdayController, RoomController } from '../controllers';
 import express from 'express';
-
 
 const storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -81,7 +80,7 @@ router.post(
 router.post('/user/get-nearby-users',
 	UserController.getNearbyUsers
 	);
-
+// service routes
 router.post(
 	'/service/create',
 	Validator.checkCreateService(),
@@ -94,7 +93,7 @@ router.get(
 	Middleware.verifyAccessToken,
 	ServiceController.getAll
 	);
-
+// ad routes
 router.post(
 	'/ad/create',
 	Middleware.verifyAccessToken,
@@ -103,12 +102,24 @@ router.post(
 	AdServiceController.create
 );
 
+router.patch(
+	'/ad/:id',
+	Middleware.verifyAccessToken,
+	AdServiceController.update
+	);
+
 router.get(
 	'/ad',
 	Middleware.verifyAccessToken,
 	AdServiceController.getAll
 	);
 
+router.delete(
+	'/ad/:id',
+	Middleware.verifyAccessToken,
+	AdServiceController.delete
+	);
+// typeemployment routes
 router.post(
 	'/typeemployment/create',
 	// Middleware.verifyAccessToken,
@@ -121,15 +132,15 @@ router.get(
 	'/typeemployment',
 	TypeemploymentController.getAll
 	);
-
+// timeofday route
 router.post(
 	'/timeofday/create',
 	Middleware.verifyAccessToken,
-	// Validator.checkCreateTypeemployment(),
-	// Middleware.handleValidationError,
+	Validator.checkCreateTypeemployment(),
+	Middleware.handleValidationError,
 	TimeofdayController.create
 );
-
+// role routes
 router.post(
 	'/role/create',
 	Validator.checkCreateRole(),
@@ -141,6 +152,17 @@ router.get(
 	'/role',
 	RoleController.getAll
 	);
+// notification routes
+// router.post('/room/register-fcm-token',Validator.checkRegisterFCMToken(),Middleware.handleValidationError, RoomController.registerFCMToken);
+
+// router.post('/room/send-notification',Middleware.verifyAccessToken,Validator.checksendNotification(),Middleware.handleValidationError, RoomController.sendNotification)
+
+// room routes
+router.post('/room/:adId/:authorId/:userId', Middleware.verifyAccessToken, RoomController.checkOrCreateRoom);
+
+router.post('/room/:roomId/:senderId',Middleware.verifyAccessToken,Validator.checkSendMessage(),Middleware.handleValidationError, RoomController.sendMessage);
+
+router.get('/room/:roomId/messages', Middleware.verifyAccessToken, RoomController.getMessages);
 
 router.get('/public', (req, res, next) => {
 	res.status(200).json({ message: "here is your public resource" });

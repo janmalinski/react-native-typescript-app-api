@@ -1,4 +1,4 @@
-import { body, check, param, query } from 'express-validator';
+import { body, check, param, } from 'express-validator';
 
 import { UserModel }from '../models';
 
@@ -38,11 +38,16 @@ class Validator{
 				.withMessage('The user longitude should not be empty')
 				.isNumeric()
 				.withMessage('The user longitude should be numeric'),
-			body('userType')
+			body('userRoleId')
 				.notEmpty()
-				.withMessage('The user type should not be empty')
+				.withMessage('The user role should not be empty')
 				.isString()
-				.withMessage('The user type should be string')
+				.withMessage('The user type should be string'),
+			body('language')
+			.notEmpty()
+			.withMessage('The language should not be empty')
+			.isString()
+			.withMessage('The language should be string')
 		];
 	};
 
@@ -51,8 +56,8 @@ class Validator{
 			body('code')
 				.notEmpty()
 				.withMessage('The code value should not be empty')
-				.isNumeric()
-				.withMessage('The code must contain only digits')
+				.isString()
+				.withMessage('The code value should be string')
 				.isLength({ min: 4, max: 4 })
 				.withMessage('The code is made of 4 digits'),
 		];
@@ -95,7 +100,17 @@ class Validator{
 				.notEmpty()
 				.withMessage('The email value should not be empty')
 				.isEmail()
-				.withMessage('Check email format')
+				.withMessage('Check email format'),
+			body('latitude')
+				.notEmpty()
+				.withMessage('The user latitude should not be empty')
+				.isNumeric()
+				.withMessage('The user latitude should be numeric'),
+			body('longitude')
+			.notEmpty()
+			.withMessage('The user longitude should not be empty')
+			.isNumeric()
+			.withMessage('The user longitude should be numeric'),
 		];
 	}
 
@@ -132,14 +147,17 @@ class Validator{
 				body('dateAvailableFrom')
 				.notEmpty()
 				.withMessage('The dateAvailableFrom value should not be empty'),
-				// body('dateAvailableFrom')
-				// .trim()
-				// .isDate()
-				// .withMessage('The dateAvailableFrom value should be in datetime format'),
-				// body('dateAvailableTo')
-				// .trim()
-				// .isDate()
-				// .withMessage('The dateAvailableTo value should be in datetime format')
+				body('dateAvailableFrom')
+				.trim()
+				.isString()
+				.withMessage('The dateAvailableFrom value should be in string format'),
+				body('dateAvailableTo')
+				.trim()
+				.isString()
+				.withMessage('The dateAvailableTo value should be in string format'),
+				body('workingTimeNegotiable')
+				.isBoolean()
+				.withMessage('The workingTimeNegotiable value should be true or false')
 		]
 	}
 
@@ -152,8 +170,37 @@ class Validator{
 		]
 	}
 
+	checkRegisterFCMToken(){
+		return[
+			body('token')
+			.isString()
+			.withMessage('The FCM token should be a string')
+		]
+	}
 
+	checksendNotification(){
+		return[
+			body('title')
+			.isString()
+			.withMessage('The title should be a string'),
+			body('body')
+			.isString()
+			.withMessage('The body should be a string'),
+			body('imageUrl')
+			.isString()
+			.withMessage('The imageUrl should be a string'),
+		]
+	}
 
+	checkSendMessage(){
+		return[
+			body('text')
+			.isString()
+			.withMessage('The text should be a string'),
+		]
+	}
+
+	// EXAMPLES OF VALIDATION CASES
 	// checkCreateTodo() {
 	// 	return [
 	// 		body('id')
