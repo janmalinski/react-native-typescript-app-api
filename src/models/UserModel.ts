@@ -10,6 +10,7 @@ export interface UserModelAttributes {
 	name?: string;
 	phonenumber?: string;
 	phonenumberconsent?: boolean;
+	address?: string;
 	latitude?: number;
 	longitude?: number;
 	registrationcode?: string;
@@ -21,6 +22,8 @@ type UserModelCreationAttributes = Optional<UserModelAttributes, 'id'>;
 
 class UserModel extends Model<UserModelAttributes, UserModelCreationAttributes> {
 	declare id: string;
+	declare name: string;
+	declare avatarurl: string;
 }
 
 UserModel.init(
@@ -50,6 +53,9 @@ UserModel.init(
 		phonenumberconsent:{
 			type: DataTypes.BOOLEAN,
 		}, 
+		address: {
+			type: DataTypes.STRING,
+		},
 		latitude: {
 			type: DataTypes.FLOAT,
 		},

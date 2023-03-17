@@ -11,6 +11,7 @@ type AdTypeemploymentModelCreationAttributes =  Optional<AdTypeemploymentModelAt
 
 class AdTypeemploymentModel extends Model<AdTypeemploymentModelAttributes, AdTypeemploymentModelCreationAttributes> {
 	declare id: string;
+	declare typeemployment_id: string;
 }
 
 AdTypeemploymentModel.init(
@@ -21,11 +22,13 @@ AdTypeemploymentModel.init(
 			primaryKey: true,
 		},	
 		ad_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},	
 		typeemployment_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},	
 	},

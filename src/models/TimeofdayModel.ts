@@ -33,11 +33,12 @@ TimeofdayModel.init(
 		},
 		ad_id: {
 			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},	
         negotiable: {
             type: DataTypes.BOOLEAN,
-			allowNull: true,
+			allowNull: false,
             defaultValue: false
         },
         timeofday:{

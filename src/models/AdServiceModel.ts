@@ -11,6 +11,8 @@ type AdServiceModelCreationAttributes = Optional<AdServiceModelAttributes, 'id'>
 
 class AdServiceModel extends Model<AdServiceModelAttributes, AdServiceModelCreationAttributes> {
 	declare id: string;
+	declare ad_id: string;
+	declare service_id: string;
 }
 
 AdServiceModel.init(
@@ -21,11 +23,13 @@ AdServiceModel.init(
 			primaryKey: true,
 		},	
 		ad_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},
 		service_id: {
-			type: DataTypes.STRING,
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},
 			

@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import db from '../config/database.config';
 
 export interface AdModelAttributes {
@@ -15,6 +15,14 @@ type AdModelCreationAttributes = Optional<AdModelAttributes, 'id'>;
 
 class AdModel extends Model<AdModelAttributes, AdModelCreationAttributes> {
 	declare id: string;
+	declare availableto: string;
+	declare availablefrom: string;
+	declare description: string;
+	declare latitude: number;
+	declare longitude: number;
+	declare address: string;
+	declare user_id: string;
+	declare createdAt: string;
 }
 
 AdModel.init(
