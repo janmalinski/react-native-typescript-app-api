@@ -5,5 +5,7 @@ export { default as RoleModel, RoleModelAttributes } from './RoleModel';
 export { default as ServiceModel, ServiceModelAttributes } from './ServiceModel';
 export { default as TimeofdayModel, TimeofdayModelAttributes } from './TimeofdayModel';
 export { default as TypeemploymentModel, TypeemploymentModelAttributes } from './TypeemploymentModel';
-export { default as UserModel, UserModelAttributes } from './userModel';
+export { default as UserModel, UserModelAttributes } from './UserModel';
 export { default as UserRoleModel, UserRoleModelAttributes } from './UserRoleModel';
+export { default as RoomModel, RoomModelAttributes } from './RoomModel';
+export { default as MessageModel, MessageModelAttributes } from './MessageModel';
