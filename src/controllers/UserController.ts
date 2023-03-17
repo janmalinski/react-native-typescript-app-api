@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { QueryTypes } from 'sequelize';
 
 import { RequestTypes, UserTypes  } from "../types";
-import { ServiceModel, TimeofdayModel, TypeemploymentModel, UserModel } from "../models";
+import { RoomModel, ServiceModel, TimeofdayModel, TypeemploymentModel, UserModel } from "../models";
 import { deleteFile } from '../utils/file';
 import db from "../config/database.config";
 
@@ -15,7 +15,7 @@ class UserController {
 			},
 		})    
 			if(user){
-				const { id, email, avatarurl, name, phonenumber, phonenumberconsent} = user;
+				const { id, email, avatarurl, name, phonenumber, phonenumberconsent, latitude, longitude, address} = user;
 				// @ts-ignore
 				const ads = await user.getAds({
 					include: [
@@ -24,13 +24,43 @@ class UserController {
 						{model: TypeemploymentModel, as: 'Typeemployments', attributes: ['id', 'name']}
 					]
 				});
+				let roomsData: any = [];
+				for(let i: any = 0; i < ads.length; i++){
+
+				const currentAd = ads[i];
+
+				const rooms = await RoomModel.findAll({where: {ad_id: currentAd.id}});
+               
+                for(let i = 0; i < rooms.length; i++){
+                    const user = await UserModel.findOne({where: {id: rooms[i].user_id}});
+                    roomsData.push({room: {id: rooms[i].id, ad_id: rooms[i].ad_id, author_id: rooms[i].author_id, user_id: rooms[i].user_id, created_at: rooms[i].createdAt}, user: {id: user?.id, name: user?.name, avatar_url: user?.avatarurl}})
+                }
+				};
+				
+				let modifiedAds = ads.map((ad: any, index: number)=>({id: ad.id, userId: user.id, createdAt: ad.createdAt, description: ad.description, availableFrom: ad.availablefrom, availableTo: ad.availableto, latitude: ad.latitude, longitude: ad.longitude, address: ad.address, availability:{negotiable: ad.Time.negotiable, time: ad.Time.timeofday}, services: ad.Services, typesOfEmployment: ad.Typeemployments,  
+					rooms: [
+						{
+							room: roomsData[index].room.ad_id === ad.id ? {
+							id: roomsData[index].room.id,
+							ad_id: roomsData[index].room.ad_id,
+							author_id: roomsData[index].author_id,
+							user_id: roomsData[index].user_id,
+							created_at: roomsData[index].createAd
+							} : null,
+							user: roomsData[index].room.ad_id === ad.id ? {
+								id: roomsData[index].user.id,
+								name: roomsData[index].user.name,
+								avatar_url: roomsData[index].avatar_url
+							} : null
+						}
+					]
+				}));
 
 				// @ts-ignore
 				const roles = await user.getRoles(); 
-				const modifiedAds = ads.map((ad: any)=>({id: ad.id, description: ad.description, availableFrom: ad.availablefrom, availableTo: ad.availableto, latitude: ad.latitude, longitude: ad.longitude, address: ad.address, availability:{negotiable: ad.Time.negotiable, time: ad.Time.timeofday}, services: ad.Services, typeOfEmployments: ad.Typeemployments}));
 				const modifiedRoles = roles.map((role: any)=>({id: role.id, name: role.name}));
 
-				return res.status(200).json({user: {id, email, name, phoneNumber: phonenumber, phoneNumberConsent: phonenumberconsent, avatarURL: avatarurl, ads:  modifiedAds, roles: modifiedRoles}});
+				return res.status(200).json({user: {id, email, name, phoneNumber: phonenumber, phoneNumberConsent: phonenumberconsent,latitude, longitude, address, avatarUrl: avatarurl, ads:  modifiedAds, roles: modifiedRoles}});
 			} else {
 				return res.status(404).json({message: 'User not found'});
 			}
@@ -51,7 +81,6 @@ class UserController {
 				const avatarURL = '/img/'+req.file.filename;
 				user.avatarurl = avatarURL
 				await user.save();
-				console.log('AVATAR_URL', avatarURL)
 				return res.status(200).json({message: 'Avatar image uploaded', avatarURL });
 			}
 		} catch (error) {
@@ -61,19 +90,36 @@ class UserController {
 
 	async update(req: RequestTypes, res: Response) {
 		try {
-			const record = await UserModel.findOne({ where: { email: req.userEmail } });
+			const record:  UserTypes | null = await UserModel.findOne({ where: { email: req.userEmail } });
 			if (!record) {
 				return res.status(404).json({ message: "Can not find existing record" });
 			}
-			const { body: {name, phoneNumber, phoneNumberConsent, email, latitude, longitude}} = req;
-			const id = record?.getDataValue('id')
-			const sqlUpdate = `UPDATE  users  SET name='${name}', phoneNumber='${phoneNumber}', phoneNumberConsent=${phoneNumberConsent}, email='${email}', latitude=${latitude}, longitude=${longitude}  WHERE id='${id}'`
+			// @ts-ignore
+			const ads = await record.getAds({
+				include: [
+					{model: TimeofdayModel, as: 'Time'},
+					{model: ServiceModel, as: 'Services', attributes: ['id', 'name']},
+					{model: TypeemploymentModel, as: 'Typeemployments', attributes: ['id', 'name']}
+				]
+			});
+
+			// @ts-ignore
+			const roles = await record.getRoles(); 
+			
+			const { body } = req;
+			const userId = record?.getDataValue('id')
+			const sqlUpdate = `UPDATE  users  SET name='${body.name}', phoneNumber='${body.phoneNumber}', phoneNumberConsent=${body.phoneNumberConsent}, email='${body.email}', address='${body.address}', latitude=${body.latitude}, longitude=${body.longitude}  WHERE id='${userId}'`
 			await db.query(sqlUpdate);
-			const sqlSelect = `SELECT email, avatarUrl, name, phonenumber, phonenumberconsent, latitude, longitude FROM users WHERE id='${id}'`;
-			const user= await db.query(sqlSelect, { type: QueryTypes.SELECT });
-			return res.status(200).json({user});
+			const sqlSelect = `SELECT email, avatarUrl, name, phonenumber, phonenumberconsent, address, latitude, longitude FROM users WHERE id='${userId}'`;
+			const user = await db.query(sqlSelect, { type: QueryTypes.SELECT });
+			const modifiedAds = ads.map((ad: any)=>({id: ad.id, userId: ad.user_id, description: ad.description, availableFrom: ad.availablefrom, availableTo: ad.availableto, latitude: ad.latitude, longitude: ad.longitude, address: ad.address, availability:{negotiable: ad.Time.negotiable, time: ad.Time.timeofday}, services: ad.Services, typeOfEmployments: ad.Typeemployments}));
+			const modifiedRoles = roles.map((role: any)=>({id: role.id, name: role.name}));
+	
+			const data = {
+				user: user[0], ads:  modifiedAds, roles: modifiedRoles
+			}
+			return res.status(200).json(data);
 		} catch (e) {
-			console.log('USER_ERROR', e)
 			res.status(500).json({message:'Server error'});
 		}
 	}

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import aws from 'aws-sdk';
 import { Op } from 'sequelize';
 
-import { UserModel, UserRoleModel, RoleModel } from "../models";
+import { UserModel, UserRoleModel } from "../models";
 import { randomString } from '../utils/randomString';
 import { UserTypes } from "../types";
 
@@ -40,7 +40,7 @@ const sendRegistrationEmail = async(email: string, text: string) => {
 
 class AuthController {
 	async signUp(req: Request , res: Response){
-        const {email, password, latitude, longitude, userType, language } = req.body;
+        const {email, password, latitude, longitude, userRoleId, language } = req.body;
         try { 
                 bcrypt.hash(password, 12, async(err, passwordHash) => {
                     if (err) {
@@ -56,7 +56,7 @@ class AuthController {
                                 registrationcode: code,
                                 registrationcodeexpirationdate: codeExpirationDate as unknown as Date
                             })
-                             await UserRoleModel.create({ user_id: user?.id, role_id: userType  })
+                             await UserRoleModel.create({ user_id: user?.id, role_id: userRoleId  })
                             .then(async() => {
                                 let text = '';
                                 text += language == 'en' ? "Hello," + "\n" + "your registration code is: " + code + "\n" + "To finish registration, please copy and paste this code into code registartion form in app." + "\n" + 
@@ -83,8 +83,13 @@ class AuthController {
         try {
             const { code } = req.body;
             const user:  UserTypes | null = await UserModel.findOne({ where: {registrationcode: code, registrationcodeexpirationdate: {[Op.gt] : Date.now()}}});
-            user?.update({registered: true});
-            res.status(200).json({message: 'User successfully registered, now you can log in.'});
+            if(user){
+                user.update({registered: true});
+                return res.status(200).json({message: 'User successfully registered, now you can log in.'});
+            } else {
+                return res.status(404).json({message: 'Please, provide correct registraion code.'});
+            }
+            
         } catch (error) {
             console.log('Error', error)
             res.status(500).json({message:'Server error'})
