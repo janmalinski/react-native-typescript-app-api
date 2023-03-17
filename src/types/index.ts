@@ -19,21 +19,24 @@ interface workingTime {
 export interface UserTypes extends UserModel {
 	email?: string;
 	password?: string;
-	avatarurl?: string;
-   name?: string;
+	avatarurl: string;
+   name: string;
    phonenumber?: string,
-   phonenumberconsent?: string; 
+   phonenumberconsent?: string;
+   latitude?: number;
+   longitude?: number; 
+   address?: string;
    registered?: boolean;
    Services?: ServiceModel[];
    AdModels?: AdModelAttributes[];
    getServices?: () => void; 
    // getAds?: () => any; 
    // getRoles?: () => any; 
-   createAd?: ({description, availablefrom: dateavailablefrom, availableto: dateAvailableTo, latitude, longitude, address}:{ description: string, availablefrom: Date, availableto: Date, latitude: number, longitude: number, address: string}) => void;
+   createAd?: ({description, availablefrom, availableto, latitude, longitude, address}:{ description: string, availablefrom: Date, availableto: Date, latitude: number, longitude: number, address: string}) => void;
 };
 
 export interface AdTypes extends AdModel {
-   createTimeofday?: ({timeOfDay: workingTime, negotiable}:{timeOfDay: workingTime[], negotiable: boolean}) => void;
+   createTimeofday?: ({timeOfDay, negotiable}:{timeOfDay: workingTime[], negotiable: boolean}) => void;
 }
 
 
