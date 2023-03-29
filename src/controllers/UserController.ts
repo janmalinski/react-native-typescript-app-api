@@ -39,15 +39,15 @@ class UserController {
 				
 				let modifiedAds = ads.map((ad: any, index: number)=>({id: ad.id, userId: user.id, createdAt: ad.createdAt, description: ad.description, availableFrom: ad.availablefrom, availableTo: ad.availableto, latitude: ad.latitude, longitude: ad.longitude, address: ad.address, availability:{negotiable: ad.Time.negotiable, time: ad.Time.timeofday}, services: ad.Services, typesOfEmployment: ad.Typeemployments,  
 					rooms: [
-						{
-							room: roomsData[index].room.ad_id === ad.id ? {
+						roomsData.length > 0 &&	{
+							room: roomsData[index]?.room.ad_id === ad.id ? {
 							id: roomsData[index].room.id,
 							ad_id: roomsData[index].room.ad_id,
 							author_id: roomsData[index].author_id,
 							user_id: roomsData[index].user_id,
 							created_at: roomsData[index].createAd
 							} : null,
-							user: roomsData[index].room.ad_id === ad.id ? {
+							user: roomsData[index]?.room.ad_id === ad.id ? {
 								id: roomsData[index].user.id,
 								name: roomsData[index].user.name,
 								avatar_url: roomsData[index].avatar_url
