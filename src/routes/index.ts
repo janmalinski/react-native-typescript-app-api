@@ -153,12 +153,12 @@ router.get(
 	RoleController.getAll
 	);
 // notification routes
-// router.post('/room/register-fcm-token',Validator.checkRegisterFCMToken(),Middleware.handleValidationError, RoomController.registerFCMToken);
+router.post('/room/register-fcm-token',Validator.checkRegisterFCMToken(),Middleware.handleValidationError, RoomController.registerFCMToken);
 
-// router.post('/room/send-notification',Middleware.verifyAccessToken,Validator.checksendNotification(),Middleware.handleValidationError, RoomController.sendNotification)
+router.post('/room/send-notification',Middleware.verifyAccessToken,Validator.checksendNotification(),Middleware.handleValidationError, RoomController.sendNotification)
 
 // room routes
-router.post('/room/:adId/:authorId/:userId', Middleware.verifyAccessToken, RoomController.checkOrCreateRoom);
+router.post('/room/:adId/:authorId/:userId/:roomId?', Middleware.verifyAccessToken, RoomController.checkOrCreateRoom);
 
 router.post('/room/:roomId/:senderId',Middleware.verifyAccessToken,Validator.checkSendMessage(),Middleware.handleValidationError, RoomController.sendMessage);
 
