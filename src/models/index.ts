@@ -9,3 +9,4 @@ export { default as UserModel, UserModelAttributes } from './UserModel';
 export { default as UserRoleModel, UserRoleModelAttributes } from './UserRoleModel';
 export { default as RoomModel, RoomModelAttributes } from './RoomModel';
 export { default as MessageModel, MessageModelAttributes } from './MessageModel';
+export { default as FCMTokenModel, FCMTokenModelAttributes } from './FCMTokenModel';
