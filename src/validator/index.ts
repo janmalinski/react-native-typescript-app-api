@@ -172,9 +172,12 @@ class Validator{
 
 	checkRegisterFCMToken(){
 		return[
-			body('token')
+			body('fcmToken')
 			.isString()
-			.withMessage('The FCM token should be a string')
+			.withMessage('The FCM token should be a string'),
+			body('receiverId')
+			.isString()
+			.withMessage('The receiverId should be a string')
 		]
 	}
 
