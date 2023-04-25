@@ -1,5 +1,5 @@
 {
-	"name": "crud-ts",
+	"name": "homeservicesprovider-api",
 	"version": "1.0.0",
 	"description": "REST API with typescript + Express.js + Sequelize",
 	"main": "index.js",
