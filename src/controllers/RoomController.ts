@@ -52,8 +52,9 @@ class RoomController {
 
     async sendMessage(req: Request, res: Response){
         try {
-            const { text, adId, receiverId, authorOfRoom, userOfRoom } = req.body;
-            const { roomId, senderId } = req.params;
+            const { text, adId, receiverId, senderId, authorOfRoom, userOfRoom } = req.body;
+            const { roomId,  } = req.params;
+        
             const message = await MessageModel.create({
                 room_id: roomId,
                 user_id: senderId,
@@ -84,7 +85,6 @@ class RoomController {
                     // // type: "alarmNotification",
                     authorId: authorOfRoom,
                     userId: userOfRoom,
-                    senderId,
                     receiverId,
                     adId    
                     },

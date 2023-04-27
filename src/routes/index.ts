@@ -160,7 +160,7 @@ router.post('/room/register-fcm-token', Middleware.verifyAccessToken, Validator.
 // room routes
 router.post('/room/:adId/:authorId/:userId/:roomId?', Middleware.verifyAccessToken, RoomController.checkOrCreateRoom);
 
-router.post('/room/:roomId/:senderId',Middleware.verifyAccessToken,Validator.checkSendMessage(),Middleware.handleValidationError, RoomController.sendMessage);
+router.post('/room/:roomId',Middleware.verifyAccessToken,Validator.checkSendMessage(),Middleware.handleValidationError, RoomController.sendMessage);
 
 router.get('/room/:roomId/messages', Middleware.verifyAccessToken, RoomController.getMessages);
 
