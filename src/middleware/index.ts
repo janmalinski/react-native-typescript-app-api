@@ -11,7 +11,7 @@ class Middleware {
 		next();
 	}
 
-	async verifyAccessToken(req: any, res: Response, next: NextFunction){
+	async verifyAccessToken(req: Request, res: Response, next: NextFunction){
 		const authHeader = req.get('Authorization');
 		if (!authHeader) {
 			return res.status(401).json({message: 'Not authenticated, no authorization header'})
@@ -28,6 +28,7 @@ class Middleware {
 		if (!decodedToken) {
 			return res.status(401).json({message: 'Not authenticated, no access token in authorization header'})
 		}
+		// @ts-ignore
 		req.userEmail = decodedToken.email;
 		next();
 	}
