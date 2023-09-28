@@ -201,7 +201,7 @@ class AdServiceController{
                 const services = await Service.findAll({where:{id: modifiedServiceIds}, attributes:['id', 'name']});
                 const typesOfEmployment = await Typeemployment.findAll({where:{id: modifiedEmploymentTypeIds}, attributes:['id', 'name']});
                 const userId = currentAd.user_id
-                const user = await UserModel.findByPk();
+                const user = await UserModel.findByPk(userId);
                 const rooms = await RoomModel.findAll({where: {ad_id: currentAd.id}});
                 let roomsData = [];
                 for(let i = 0; i < rooms.length; i++){
@@ -226,7 +226,12 @@ class AdServiceController{
                     },
                     avatar: user?.avatarurl,
                     createdAt: currentAd.createdAt,
-                    rooms: roomsData
+                    rooms: roomsData,
+                    authorName: user?.name,
+                    authorAvatar: user?.avatarurl,
+                    authorPhoneNumberConsent: user?.phonenumberconsent,
+                    authorPhoneNumber: user?.phonenumber,
+                    authorAddress: user?.address
                 }
                 data.push({...ad});
             };

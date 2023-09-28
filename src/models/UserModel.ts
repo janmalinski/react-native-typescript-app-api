@@ -24,7 +24,10 @@ class UserModel extends Model<UserModelAttributes, UserModelCreationAttributes> 
 	declare id: string;
 	declare name: string;
 	declare avatarurl: string;
-}
+	declare phonenumber: string;
+	declare phonenumberconsent: boolean;
+	declare address: string;
+};
 
 UserModel.init(
 	{

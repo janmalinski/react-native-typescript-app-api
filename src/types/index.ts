@@ -17,15 +17,15 @@ interface workingTime {
  }
 
 export interface UserTypes extends UserModel {
-	email?: string;
-	password?: string;
 	avatarurl: string;
    name: string;
-   phonenumber?: string,
-   phonenumberconsent?: string;
+   phonenumber: string,
+   phonenumberconsent: boolean;
+   address: string;
    latitude?: number;
    longitude?: number; 
-   address?: string;
+   email?: string;
+	password?: string;
    registered?: boolean;
    Services?: ServiceModel[];
    AdModels?: AdModelAttributes[];
