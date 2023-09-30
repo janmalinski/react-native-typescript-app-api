@@ -200,13 +200,27 @@ class AdServiceController{
                 const adWithTimeOfDay: any = await AdModel.findByPk(adIds[i],{include: [{ model: TimeofdayModel, as: 'Time', attributes:['timeofday', 'negotiable']}]});
                 const services = await Service.findAll({where:{id: modifiedServiceIds}, attributes:['id', 'name']});
                 const typesOfEmployment = await Typeemployment.findAll({where:{id: modifiedEmploymentTypeIds}, attributes:['id', 'name']});
+
+                const loggedInUser = await UserModel.findOne({where: { email: req.userEmail}});
+
                 const userId = currentAd.user_id
                 const user = await UserModel.findByPk(userId);
                 const rooms = await RoomModel.findAll({where: {ad_id: currentAd.id}});
                 let roomsData = [];
                 for(let i = 0; i < rooms.length; i++){
                     const user = await UserModel.findOne({where: {id: rooms[i].user_id}});
-                    roomsData.push({room: {id: rooms[i].id, ad_id: rooms[i].ad_id, author_id: rooms[i].author_id, user_id: rooms[i].user_id, created_at: rooms[i].createdAt}, user: {id: user?.id, name: user?.name, avatar_url: user?.avatarurl}})
+
+
+                    let participantName = '';
+
+                    if(rooms[i].author_id === loggedInUser?.id){
+                        const user = await UserModel.findByPk(rooms[i].user_id);
+                        participantName += user?.name;
+                    } else {
+                        const user = await UserModel.findByPk(rooms[i].author_id);
+                        participantName += user?.name;
+                    };
+                    roomsData.push({room: {id: rooms[i].id, ad_id: rooms[i].ad_id, author_id: rooms[i].author_id, user_id: rooms[i].user_id ,created_at: rooms[i].createdAt}, user: {id: user?.id, name: user?.name, avatar_url: user?.avatarurl, participant_name: participantName }})
                 }
 
                 const ad = {
