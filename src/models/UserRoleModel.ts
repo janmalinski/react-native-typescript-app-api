@@ -5,6 +5,7 @@ export interface UserRoleModelAttributes {
 	id: string;
 	user_id: string;
 	role_id: string; 
+	refresh_token: string;
 }
 
 type UserRoleModeCreationlAttributes =  Optional<UserRoleModelAttributes, 'id'>;
@@ -30,6 +31,10 @@ UserRoleModel.init(
 			defaultValue: DataTypes.UUIDV4,
 			allowNull: false,
 		},		
+		refresh_token: {
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
+		}
 	},
 	{
 		sequelize: db,

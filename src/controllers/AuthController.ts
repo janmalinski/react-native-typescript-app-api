@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import aws from 'aws-sdk';
-import { Op } from 'sequelize';
+import { Op } from 'sequelize';  
 
 import { UserModel, UserRoleModel } from "../models";
 import { randomString } from '../utils/randomString';
@@ -109,7 +109,7 @@ class AuthController {
                 if (err) { // error while comparing
                     res.status(502).json({message: "Error while checking user password"});
                 } else if (compareRes) { // password match
-                    const token = jwt.sign({ email }, process.env.TOKEN_SECRET as string, { expiresIn: '24h' });
+                    const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '24h' });
                     res.status(200).json({message: "User logged in", token});
                 } else { // password doesnt match
                     res.status(401).json({message: "Invalid credentials"});

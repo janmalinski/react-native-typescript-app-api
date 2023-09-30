@@ -20,8 +20,8 @@ class Middleware {
 
 		let decodedToken: any;
 		try {
-		  const TOKEN_SECRET: string | undefined = process.env.TOKEN_SECRET;
-		  decodedToken = TOKEN_SECRET && jwt.verify(token, TOKEN_SECRET);
+		  const ACCESS_TOKEN_SECRET: string | undefined = process.env.ACCESS_TOKEN_SECRET;
+		  decodedToken = ACCESS_TOKEN_SECRET && jwt.verify(token, ACCESS_TOKEN_SECRET);
 		} catch (error: any) {
 		  return res.status(500).json({message: `Not authenticated, authorization token has expired. Please log in.`})
 		}
