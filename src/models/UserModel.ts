@@ -16,6 +16,7 @@ export interface UserModelAttributes {
 	registrationcode?: string;
 	registrationcodeexpirationdate?: Date,
 	registered?: Boolean;
+	refreshtoken?: string;
 }
 
 type UserModelCreationAttributes = Optional<UserModelAttributes, 'id'>;
@@ -74,6 +75,10 @@ UserModel.init(
 		registered: {
 			type: DataTypes.BOOLEAN,
 		},
+		refreshtoken: {
+			type: DataTypes.UUID,
+			defaultValue: DataTypes.UUIDV4,
+		}
 	},
 	{
 		sequelize: db,
