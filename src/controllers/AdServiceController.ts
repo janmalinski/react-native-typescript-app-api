@@ -220,7 +220,7 @@ class AdServiceController{
                         const user = await UserModel.findByPk(rooms[i].author_id);
                         participantName += user?.name;
                     };
-                    roomsData.push({room: {id: rooms[i].id, ad_id: rooms[i].ad_id, author_id: rooms[i].author_id, user_id: rooms[i].user_id ,created_at: rooms[i].createdAt}, user: {id: user?.id, name: user?.name, avatar_url: user?.avatarurl, participant_name: participantName }})
+                    roomsData.push({room: {id: rooms[i].id, ad_id: rooms[i].ad_id, author_id: rooms[i].author_id, user_id: rooms[i].user_id, participant_name: participantName, created_at: rooms[i].createdAt}, user: {id: user?.id, name: user?.name, avatar_url: user?.avatarurl}})
                 }
 
                 const ad = {
