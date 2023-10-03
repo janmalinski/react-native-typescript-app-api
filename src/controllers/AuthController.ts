@@ -97,20 +97,34 @@ class AuthController {
     }
 
 	async signIn(req:Request, res: Response) {
+        const cookies = req.cookies;
+
         const {email, password }= req.body;
        
         try {
-            const dbUser: any = await UserModel.findOne({ where : {
+            const foundUser: any = await UserModel.findOne({ where : {
                 email, registered: true
             },
         });      
-            if(dbUser){
-            bcrypt.compare(password, dbUser.password, (err, compareRes) => {
+            if(foundUser){
+            bcrypt.compare(password, foundUser.password, async (err, compareRes) => {
                 if (err) { // error while comparing
                     res.status(502).json({message: "Error while checking user password"});
                 } else if (compareRes) { // password match
-                    const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '24h' });
-                    res.status(200).json({message: "User logged in", token});
+                    const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '10s' });
+
+                    const newRefreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '1d' });
+
+                    const newRefreshtokenArray = !cookies?.jwt ? foundUser.refreshtoken : foundUser.refreshtoken.filter((item: string) => item !== cookies.jwt);
+
+                    if(cookies?.jwt) res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true});
+
+                    foundUser.refreshtoken = [...newRefreshtokenArray, newRefreshToken];
+                    await foundUser.save();
+
+                    res.cookie('jwt', newRefreshToken, {httpOnly: true, secure: true, sameSite: 'none', maxAge: 24 * 60 * 60 * 1000 })
+                    res.status(200).json({message: "User logged in", accessToken});
+
                 } else { // password doesnt match
                     res.status(401).json({message: "Invalid credentials"});
                 };});
@@ -121,10 +135,29 @@ class AuthController {
             console.log('ERROR', error)
             res.status(500).json({message:'Server error'})
         }
-
     };
     
+    async signOut(req: Request, res: Response) {
+        
+        // On client, also delete the accessToken
 
+        const cookies = req.cookies;
+        if(!cookies.jwt) return res.sendStatus(204); 
+        const refreshToken = cookies.jwt;
+
+        // Is refreshtoken in db?
+        const foundUser = await UserModel.findOne(refreshToken);
+        if(!foundUser) {
+            res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true});
+            return res.sendStatus(204);
+        }
+
+        foundUser.refreshtoken = foundUser.refreshtoken?.filter(item => item !== refreshToken);
+        await foundUser.save();
+
+        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true});
+        res.sendStatus(204);
+    }
 
 };
 

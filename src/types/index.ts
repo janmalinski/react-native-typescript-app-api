@@ -33,6 +33,7 @@ export interface UserTypes extends UserModel {
    // getAds?: () => any; 
    // getRoles?: () => any; 
    createAd?: ({description, availablefrom, availableto, latitude, longitude, address}:{ description: string, availablefrom: Date, availableto: Date, latitude: number, longitude: number, address: string}) => void;
+   refreshtoken: string[] | [];
 };
 
 export interface AdTypes extends AdModel {

@@ -1,9 +1,9 @@
+import express from 'express';
 import multer from 'multer';
 
 import Validator from '../validator';
 import Middleware from '../middleware';
-import { AdServiceController, AuthController, RoleController, UserController, ServiceController, TypeemploymentController, TimeofdayController, RoomController } from '../controllers';
-import express from 'express';
+import { AdServiceController, AuthController, RoleController, UserController, ServiceController, TypeemploymentController, TimeofdayController, RoomController, RefreshTokenController  } from '../controllers';
 
 const storage = multer.diskStorage({
 	destination: function(req, file, cb) {
@@ -163,6 +163,9 @@ router.post('/room/:adId/:authorId/:userId/:roomId?', Middleware.verifyAccessTok
 router.post('/room/:roomId',Middleware.verifyAccessToken,Validator.checkSendMessage(),Middleware.handleValidationError, RoomController.sendMessage);
 
 router.get('/room/:roomId/messages', Middleware.verifyAccessToken, RoomController.getMessages);
+
+router.get('/refresh', RefreshTokenController.handleRefreshToken)
+
 
 router.get('/public', (req, res, next) => {
 	res.status(200).json({ message: "here is your public resource" });

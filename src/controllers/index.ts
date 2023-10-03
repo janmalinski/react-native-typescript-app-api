@@ -6,3 +6,4 @@ export { default as TimeofdayController } from './TimeofdayController';
 export { default as TypeemploymentController } from './TypeemploymentController';
 export { default as UserController } from './UserController';
 export { default as RoomController } from './RoomController';
+export { default as RefreshTokenController } from './RefreshTokenController';

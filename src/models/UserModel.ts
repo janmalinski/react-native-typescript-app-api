@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import db from '../config/database.config';
 
 
@@ -16,7 +16,7 @@ export interface UserModelAttributes {
 	registrationcode?: string;
 	registrationcodeexpirationdate?: Date,
 	registered?: Boolean;
-	refreshtoken?: string;
+	refreshtoken?: string[] | [];
 }
 
 type UserModelCreationAttributes = Optional<UserModelAttributes, 'id'>;
@@ -28,6 +28,7 @@ class UserModel extends Model<UserModelAttributes, UserModelCreationAttributes> 
 	declare phonenumber: string;
 	declare phonenumberconsent: boolean;
 	declare address: string;
+	declare refreshtoken: string[] | [];
 };
 
 UserModel.init(
@@ -76,8 +77,8 @@ UserModel.init(
 			type: DataTypes.BOOLEAN,
 		},
 		refreshtoken: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV4,
+			type: DataTypes.ARRAY(DataTypes.STRING),
+			defaultValue: [],
 		}
 	},
 	{
