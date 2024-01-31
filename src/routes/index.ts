@@ -55,6 +55,14 @@ router.post(
 	AuthController.signIn
 );
 
+router.post(
+	'/auth/signOut',
+	Middleware.verifyAccessToken,
+	Validator.checkSignOut(),
+	Middleware.handleValidationError,
+	AuthController.signOut
+);
+
 // user routes
 router.get(
 	'/user',

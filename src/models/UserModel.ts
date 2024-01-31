@@ -16,18 +16,20 @@ export interface UserModelAttributes {
 	registrationcode?: string;
 	registrationcodeexpirationdate?: Date,
 	registered?: Boolean;
-	refreshtoken?: string;
+	refreshtoken?: string[] | [];
 }
 
 type UserModelCreationAttributes = Optional<UserModelAttributes, 'id'>;
 
 class UserModel extends Model<UserModelAttributes, UserModelCreationAttributes> {
 	declare id: string;
+	declare email: string;
 	declare name: string;
 	declare avatarurl: string;
 	declare phonenumber: string;
 	declare phonenumberconsent: boolean;
 	declare address: string;
+	declare refreshtoken: string[] | [];
 };
 
 UserModel.init(
@@ -76,8 +78,8 @@ UserModel.init(
 			type: DataTypes.BOOLEAN,
 		},
 		refreshtoken: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV4,
+			type: DataTypes.ARRAY(DataTypes.TEXT),
+			defaultValue: [],
 		}
 	},
 	{

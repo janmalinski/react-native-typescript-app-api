@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import jwtDecode from 'jwt-decode';
+import randToken from 'rand-token'; 
 import aws from 'aws-sdk';
 import { Op } from 'sequelize';  
 
 import { UserModel, UserRoleModel } from "../models";
 import { randomString } from '../utils/randomString';
-import { UserTypes } from "../types";
+import { RequestTypes, UserTypes } from "../types";
 
 const ses = new aws.SES(
 	{region: 'us-east-1',
@@ -105,12 +107,21 @@ class AuthController {
             },
         });      
             if(dbUser){
-            bcrypt.compare(password, dbUser.password, (err, compareRes) => {
+            bcrypt.compare(password, dbUser.password, async (err, compareRes) => {
                 if (err) { // error while comparing
                     res.status(502).json({message: "Error while checking user password"});
                 } else if (compareRes) { // password match
-                    const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '24h' });
-                    res.status(200).json({message: "User logged in", token});
+
+                    const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+                    const decodedAccessToken: any = jwtDecode(accessToken);
+                    const accessTokenExpiresAt = decodedAccessToken.exp
+                    const refreshToken = randToken.uid(256);
+                    console
+                    dbUser.refreshtoken = dbUser.refreshtoken.length ? [...dbUser.refreshtoken, refreshToken] : [refreshToken];
+                    await dbUser.save();
+
+                    res.status(200).json({message: "User logged in", accessToken, accessTokenExpiresAt,
+                    refreshToken});
                 } else { // password doesnt match
                     res.status(401).json({message: "Invalid credentials"});
                 };});
@@ -121,11 +132,41 @@ class AuthController {
             console.log('ERROR', error)
             res.status(500).json({message:'Server error'})
         }
-
     };
-    
 
+    async checkRefreshToken(req: Request, res: Response){
+        const {refreshToken } = req.body
+        try {
+            const user = await UserModel.findOne({ where: {refreshtoken: refreshToken}});
 
+            if(!user) {
+                return res.status(401).json({
+                    message: 'Invalid token'
+                })
+            };
+
+            const accessToken = jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+            return res.json({accessToken})
+        } catch (err) {
+            return res.status(500).json({message: 'Could not refresh token'})
+        }
+    };
+
+    async signOut(req: RequestTypes, res: Response){
+        try {
+            const user: UserTypes | null = await UserModel.findOne({ where : {email: req.userEmail}});
+            const modifiedRefreshTokens = user?.refreshtoken.filter(item => item !== req.body.refreshToken);
+            if(user && modifiedRefreshTokens) {
+                user.refreshtoken = modifiedRefreshTokens;
+                const modifiedUSER = await user.save()
+            }
+            return res.status(204).json({message: 'User logged out'})
+  
+        } catch (error) {
+            console.log('ERROR', error)
+            res.status(500).json({message:'Server error'})
+        }
+    };
 };
 
 

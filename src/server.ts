@@ -9,8 +9,8 @@ import app from './app';
 import { ServiceModel, UserModel, AdServiceModel, AdModel, TypeemploymentModel, AdTypeemploymentModel, TimeofdayModel, RoleModel, UserRoleModel, RoomModel, MessageModel } from './models';
 
 
-// const key = fs.readFileSync(path.resolve('ssl/key.pem'));
-// const cert = fs.readFileSync(path.resolve('ssl/cert.pem'));
+// const key = fs.readFileSync(path.resolve('ssl/key.pem'), 'utf8');
+// const cert = fs.readFileSync(path.resolve('ssl/cert.pem'), 'utf8');
 
 RoomModel.hasMany(MessageModel, {foreignKey: 'room_id'});
 MessageModel.belongsTo(RoomModel, { constraints: true,  onDelete: 'CASCADE', as: 'Room'});
@@ -33,15 +33,15 @@ AdModel.belongsToMany(TypeemploymentModel, {through: {model: AdTypeemploymentMod
 TimeofdayModel.belongsTo(AdModel);
 AdModel.hasOne(TimeofdayModel,  { foreignKey: 'ad_id', as: 'Time'});
 
-const port = 9000;
+const PORT = 9000;
 
 // db.sync({force: true}).then(() => {
 db.sync()
 	.then(() => {
 	console.log("connect to db");
 	// const server = https.createServer({key, cert }, app);
-	const server = app.listen(port, () => {
-		console.log("server is running on port " + port);
+	const server = app.listen(PORT, () => {
+		console.log("server is running on port " + PORT);
 	});
 
 	const io = new Server(server);

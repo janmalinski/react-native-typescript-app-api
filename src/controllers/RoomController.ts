@@ -17,6 +17,7 @@ class RoomController {
                 res.status(200).json({roomId: room.id, authorId: room.author_id, userId: room.user_id});
             } else {
                 if(authorId !== userId){
+                    // @ts-ignore
                     const roomWithoutUser = await RoomModel.findOne({where: { ad_id: adId, author_id: authorId, user_id: null }});
                     if(roomWithoutUser?.id){
                         const roomWithOnlyAuthor = await RoomModel.findOne({where: { ad_id: adId, author_id: authorId }});

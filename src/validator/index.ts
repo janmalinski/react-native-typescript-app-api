@@ -77,8 +77,18 @@ class Validator{
 				.isLength({ min: 6 })
 				.withMessage('The password length should be at least 6')
 		];
-	}
+	};
 
+	checkSignOut() {
+		return [
+			body('refreshToken')
+				.notEmpty()
+				.withMessage('The refreshToken value should not be empty')
+				.isLength({ min: 256 })
+				.isLength({ max: 256 })
+				.withMessage('The refreshToken length should be 256')
+		];
+	};
 	checkUpdateUser() {
 		return [
 			body('name')
@@ -107,10 +117,10 @@ class Validator{
 				.isNumeric()
 				.withMessage('The user latitude should be numeric'),
 			body('longitude')
-			.notEmpty()
-			.withMessage('The user longitude should not be empty')
-			.isNumeric()
-			.withMessage('The user longitude should be numeric'),
+				.notEmpty()
+				.withMessage('The user longitude should not be empty')
+				.isNumeric()
+				.withMessage('The user longitude should be numeric'),
 		];
 	}
 
